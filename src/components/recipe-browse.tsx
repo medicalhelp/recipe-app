@@ -2,18 +2,27 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import type { Recipe } from '@/lib/queries'
+import type { BrowseRecipe } from '@/lib/queries'
 import { RecipeCard } from '@/components/recipe-card'
 
-export function RecipeBrowse({ recipes }: { recipes: Recipe[] }) {
+export function RecipeBrowse({ recipes }: { recipes: BrowseRecipe[] }) {
   const [query, setQuery] = useState('')
   const [searching, setSearching] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const filtered = query
-    ? recipes.filter((r) =>
-        r.name.toLowerCase().includes(query.toLowerCase())
-      )
+    ? recipes.filter((r) => {
+        const q = query.toLowerCase()
+        return (
+          r.name.toLowerCase().includes(q) ||
+          r.ingredients.some((ing) => ing.name.toLowerCase().includes(q)) ||
+          r.asParent.some(
+            (comp) =>
+              comp.childRecipe.name.toLowerCase().includes(q) ||
+              comp.childRecipe.ingredients.some((ing) => ing.name.toLowerCase().includes(q))
+          )
+        )
+      })
     : recipes
 
   function openSearch() {

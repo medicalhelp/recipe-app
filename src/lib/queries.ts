@@ -16,12 +16,24 @@ export type RecipeWithComponents = Recipe & {
 
 const MAX_DEPTH = 5
 
-export async function getAllStandaloneRecipes(): Promise<Recipe[]> {
+export async function getAllStandaloneRecipes() {
   return db.query.recipes.findMany({
     where: eq(recipes.isStandalone, true),
     orderBy: [asc(recipes.name)],
+    with: {
+      ingredients: { columns: { name: true } },
+      asParent: {
+        with: {
+          childRecipe: {
+            with: { ingredients: { columns: { name: true } } },
+          },
+        },
+      },
+    },
   })
 }
+
+export type BrowseRecipe = Awaited<ReturnType<typeof getAllStandaloneRecipes>>[number]
 
 export async function getRecipeBySlug(
   slug: string,

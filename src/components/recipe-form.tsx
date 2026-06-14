@@ -240,7 +240,7 @@ function ComponentCard({
         value={comp.ingredientsText}
         onChange={comp.isExisting ? undefined : t => onChange({ ...comp, ingredientsText: t })}
         readOnly={comp.isExisting}
-        placeholder={"20ml cream\n500g beef\n2 cloves garlic, minced"}
+        placeholder={"e.g. 1 cup flour\ne.g. 2 eggs"}
       />
 
       {/* Instructions */}
@@ -249,7 +249,7 @@ function ComponentCard({
         value={comp.stepsText}
         onChange={comp.isExisting ? undefined : t => onChange({ ...comp, stepsText: t })}
         readOnly={comp.isExisting}
-        placeholder={"Heat oil in a pan\nAdd garlic and fry 1 min\nAdd beef and cook through"}
+        placeholder={"e.g. Combine dry ingredients\ne.g. Add wet ingredients and mix"}
       />
 
       {/* Notes */}
@@ -436,13 +436,13 @@ export function RecipeForm({ initialData, allRecipes }: { initialData: InitialRe
               label="Ingredients"
               value={draft.ingredientsText}
               onChange={t => setDraft(d => ({ ...d, ingredientsText: t }))}
-              placeholder={"2 ripe avocados\n1 lime, juiced\n½ red onion, finely diced\nSalt"}
+              placeholder={"e.g. 1 cup flour\ne.g. 2 eggs"}
             />
             <SubSection
               label="Instructions"
               value={draft.stepsText}
               onChange={t => setDraft(d => ({ ...d, stepsText: t }))}
-              placeholder={"Mash the avocados — keep it slightly chunky\nMix in onion, lime juice, and salt\nTaste and adjust seasoning"}
+              placeholder={"e.g. Combine dry ingredients\ne.g. Add wet ingredients and mix"}
             />
           </div>
         )}

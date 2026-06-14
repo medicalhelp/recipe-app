@@ -1,7 +1,10 @@
 'use client'
 
+import { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+const ModalContext = createContext<{ close: () => void } | null>(null)
 
 export function RecipeModal({
   header,
@@ -11,44 +14,73 @@ export function RecipeModal({
   children: React.ReactNode
 }) {
   const router = useRouter()
+  const [visible, setVisible] = useState(true)
+
+  function close() {
+    setVisible(false)
+  }
 
   useEffect(() => {
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') router.back() }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setVisible(false) }
     window.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = prev
       window.removeEventListener('keydown', onKey)
     }
-  }, [router])
+  }, [])
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex justify-center items-start pt-8 px-4 backdrop-blur-xl bg-white/20"
-      onClick={() => router.back()}
-    >
-      <div
-        className="w-full max-w-3xl rounded-2xl shadow-2xl bg-[var(--background)] flex flex-col mb-8"
-        style={{ maxHeight: 'calc(100vh - 5rem)' }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="shrink-0 px-6 pt-5 pb-4 rounded-t-2xl">
-          {header}
-        </div>
-        <div className="overflow-y-auto">
-          {children}
-        </div>
-      </div>
-    </div>
+    <ModalContext.Provider value={{ close }}>
+      <AnimatePresence onExitComplete={() => router.back()}>
+        {visible && (
+          <motion.div
+            key="backdrop"
+            className="fixed inset-0 z-50 flex justify-center items-start pt-8 px-4 backdrop-blur-xl bg-white/20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={close}
+          >
+            <motion.div
+              className="w-full max-w-3xl rounded-2xl shadow-2xl bg-[var(--background)] flex flex-col mb-8"
+              style={{ maxHeight: 'calc(100vh - 5rem)', transformOrigin: '50% 0%' }}
+              initial={{ opacity: 0, scale: 0.96, y: -10 }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                transition: { type: 'spring', damping: 30, stiffness: 350, mass: 0.85 },
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.96,
+                y: -10,
+                transition: { duration: 0.16, ease: 'easeIn' },
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="shrink-0 px-6 pt-5 pb-4 rounded-t-2xl">
+                {header}
+              </div>
+              <div className="overflow-y-auto">
+                {children}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </ModalContext.Provider>
   )
 }
 
 export function ModalCloseButton() {
-  const router = useRouter()
+  const ctx = useContext(ModalContext)
   return (
     <button
-      onClick={() => router.back()}
+      onClick={() => ctx?.close()}
       aria-label="Close"
       className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
     >

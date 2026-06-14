@@ -1,26 +1,50 @@
+'use client'
+
+import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Recipe } from '@/lib/queries'
 import { formatMeta } from '@/lib/utils'
 
+const MotionLink = motion.create(Link)
+
+const cardVariants = {
+  rest:  { y: 0 },
+  hover: { y: -4, transition: { type: 'spring', stiffness: 420, damping: 28 } },
+}
+
+const imageVariants = {
+  rest:  { scale: 1 },
+  hover: { scale: 1.05, transition: { type: 'spring', stiffness: 360, damping: 28 } },
+}
+
 export function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
-    <Link href={`/recipes/${recipe.slug}`} className="group block">
+    <MotionLink
+      href={`/recipes/${recipe.slug}`}
+      className="block"
+      initial="rest"
+      whileHover="hover"
+      animate="rest"
+      variants={cardVariants}
+    >
       <div className="aspect-square overflow-hidden bg-[var(--border)] mb-3">
         {recipe.imageUrl ? (
-          <Image
-            src={`/api/images/${recipe.imageUrl}`}
-            alt={recipe.name}
-            width={600}
-            height={600}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-          />
+          <motion.div className="w-full h-full" variants={imageVariants}>
+            <Image
+              src={`/api/images/${recipe.imageUrl}`}
+              alt={recipe.name}
+              width={600}
+              height={600}
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
         ) : (
           <div className="w-full h-full bg-[var(--border)]" />
         )}
       </div>
       <p className="type-heading mb-1">{recipe.name}</p>
       <p className="type-ui text-[var(--muted)]">{formatMeta(recipe)}</p>
-    </Link>
+    </MotionLink>
   )
 }

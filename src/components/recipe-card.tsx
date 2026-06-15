@@ -10,12 +10,12 @@ const MotionLink = motion.create(Link)
 
 const cardVariants = {
   rest:  { y: 0 },
-  hover: { y: -4, transition: { type: 'spring', stiffness: 500, damping: 40 } },
+  hover: { y: -4, transition: { type: 'spring' as const, stiffness: 500, damping: 40 } },
 }
 
 const imageVariants = {
   rest:  { scale: 1 },
-  hover: { scale: 1.05, transition: { type: 'spring', stiffness: 500, damping: 40 } },
+  hover: { scale: 1.05, transition: { type: 'spring' as const, stiffness: 500, damping: 40 } },
 }
 
 export function RecipeCard({ recipe }: { recipe: Recipe }) {

@@ -12,7 +12,7 @@ export function ModalHeroImage({ src, alt, slug }: { src: string; alt: string; s
     <motion.div
       layoutId={`recipe-image-${slug}`}
       className="w-full aspect-[4/3] overflow-hidden rounded-t-2xl"
-      transition={{ type: 'spring', damping: 32, stiffness: 320, mass: 0.9 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 40 }}
       onLayoutAnimationComplete={() => ctx?.onImageSettled()}
     >
       <Image

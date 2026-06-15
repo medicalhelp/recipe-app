@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import { getRecipeBySlug } from '@/lib/queries'
 import { formatMeta } from '@/lib/utils'
 import { RecipeModal, ModalCloseButton } from '@/components/recipe-modal'
+import { ModalHeroImage } from '@/components/modal-hero-image'
 import { ServingsScaler } from '@/components/servings-scaler'
 
 export default async function RecipeModalPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -26,20 +26,12 @@ export default async function RecipeModalPage({ params }: { params: Promise<{ sl
     </>
   )
 
+  const image = recipe.imageUrl
+    ? <ModalHeroImage src={`/api/images/${recipe.imageUrl}`} alt={recipe.name} slug={recipe.slug} />
+    : undefined
+
   return (
-    <RecipeModal actions={actions}>
-      {recipe.imageUrl && (
-        <div className="w-full aspect-[4/3] overflow-hidden bg-[var(--border)]">
-          <Image
-            src={`/api/images/${recipe.imageUrl}`}
-            alt={recipe.name}
-            width={800}
-            height={600}
-            className="w-full h-full object-cover"
-            priority
-          />
-        </div>
-      )}
+    <RecipeModal image={image} actions={actions}>
       <div className="px-8 pt-6 pb-2 text-center">
         <h1 className="type-title">{recipe.name}</h1>
         <p className="type-ui text-[var(--muted)] mt-0.5">{formatMeta(recipe)}</p>

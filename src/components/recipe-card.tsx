@@ -28,7 +28,11 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
       animate="rest"
       variants={cardVariants}
     >
-      <div className="aspect-square overflow-hidden bg-[var(--border)] mb-3">
+      <motion.div
+        layoutId={`recipe-image-${recipe.slug}`}
+        className="aspect-square overflow-hidden bg-[var(--border)] mb-3"
+        transition={{ type: 'spring', damping: 32, stiffness: 320, mass: 0.9 }}
+      >
         {recipe.imageUrl ? (
           <motion.div className="w-full h-full" variants={imageVariants}>
             <Image
@@ -42,7 +46,7 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
         ) : (
           <div className="w-full h-full bg-[var(--border)]" />
         )}
-      </div>
+      </motion.div>
       <p className="type-heading mb-1">{recipe.name}</p>
       <p className="type-ui text-[var(--muted)]">{formatMeta(recipe)}</p>
     </MotionLink>

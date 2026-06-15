@@ -10,12 +10,12 @@ const MotionLink = motion.create(Link)
 
 const cardVariants = {
   rest:  { y: 0 },
-  hover: { y: -4, transition: { type: 'spring', stiffness: 420, damping: 28 } },
+  hover: { y: -4, transition: { type: 'spring', stiffness: 500, damping: 40 } },
 }
 
 const imageVariants = {
   rest:  { scale: 1 },
-  hover: { scale: 1.05, transition: { type: 'spring', stiffness: 360, damping: 28 } },
+  hover: { scale: 1.05, transition: { type: 'spring', stiffness: 500, damping: 40 } },
 }
 
 export function RecipeCard({ recipe }: { recipe: Recipe }) {
@@ -31,7 +31,7 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
       <motion.div
         layoutId={`recipe-image-${recipe.slug}`}
         className="aspect-square overflow-hidden bg-[var(--border)] mb-3"
-        transition={{ type: 'spring', damping: 32, stiffness: 320, mass: 0.9 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 40 }}
       >
         {recipe.imageUrl ? (
           <motion.div className="w-full h-full" variants={imageVariants}>

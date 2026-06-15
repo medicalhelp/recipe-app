@@ -7,10 +7,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 const ModalContext = createContext<{ close: () => void } | null>(null)
 
 export function RecipeModal({
-  header,
+  actions,
   children,
 }: {
-  header: React.ReactNode
+  actions?: React.ReactNode
   children: React.ReactNode
 }) {
   const router = useRouter()
@@ -45,7 +45,7 @@ export function RecipeModal({
             onClick={close}
           >
             <motion.div
-              className="w-full max-w-3xl rounded-2xl shadow-2xl bg-[var(--background)] flex flex-col mb-8"
+              className="relative w-full max-w-3xl rounded-2xl shadow-2xl bg-[var(--background)] flex flex-col mb-8 overflow-hidden"
               style={{ maxHeight: 'calc(100vh - 5rem)', transformOrigin: '50% 0%' }}
               initial={{ opacity: 0, scale: 0.96, y: -10 }}
               animate={{
@@ -62,9 +62,11 @@ export function RecipeModal({
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="shrink-0 px-6 pt-5 pb-4 rounded-t-2xl">
-                {header}
-              </div>
+              {actions && (
+                <div className="absolute top-3 right-3 z-10 flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-xl px-2.5 py-2 text-white">
+                  {actions}
+                </div>
+              )}
               <div className="overflow-y-auto">
                 {children}
               </div>
@@ -82,7 +84,7 @@ export function ModalCloseButton() {
     <button
       onClick={() => ctx?.close()}
       aria-label="Close"
-      className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+      className="opacity-75 hover:opacity-100 transition-opacity"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
         <path d="M18 6 6 18M6 6l12 12" />

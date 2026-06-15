@@ -4,17 +4,20 @@ import { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const ModalContext = createContext<{ close: () => void } | null>(null)
+export const ModalContext = createContext<{ close: () => void; onImageSettled: () => void } | null>(null)
 
 export function RecipeModal({
+  image,
   actions,
   children,
 }: {
+  image?: React.ReactNode
   actions?: React.ReactNode
   children: React.ReactNode
 }) {
   const router = useRouter()
   const [visible, setVisible] = useState(true)
+  const [imageSettled, setImageSettled] = useState(!image)
 
   function close() {
     setVisible(false)
@@ -32,45 +35,48 @@ export function RecipeModal({
   }, [])
 
   return (
-    <ModalContext.Provider value={{ close }}>
+    <ModalContext.Provider value={{ close, onImageSettled: () => setImageSettled(true) }}>
       <AnimatePresence onExitComplete={() => router.back()}>
         {visible && (
           <motion.div
             key="backdrop"
-            className="fixed inset-0 z-50 flex justify-center items-start pt-8 px-4 backdrop-blur-xl bg-white/20"
+            className="fixed inset-0 z-50 overflow-y-auto backdrop-blur-xl bg-white/20"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={close}
           >
-            <motion.div
-              className="relative w-full max-w-3xl rounded-2xl shadow-2xl bg-[var(--background)] flex flex-col mb-8 overflow-hidden"
-              style={{ maxHeight: 'calc(100vh - 5rem)', transformOrigin: '50% 0%' }}
-              initial={{ opacity: 0, scale: 0.96, y: -10 }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                y: 0,
-                transition: { type: 'spring', damping: 30, stiffness: 350, mass: 0.85 },
-              }}
-              exit={{
-                opacity: 0,
-                scale: 0.96,
-                y: -10,
-                transition: { duration: 0.16, ease: 'easeIn' },
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {actions && (
-                <div className="absolute top-3 right-3 z-10 flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-xl px-2.5 py-2 text-white">
-                  {actions}
-                </div>
-              )}
-              <div className="overflow-y-auto">
-                {children}
+            <div className="min-h-full flex justify-center items-start pt-[12vh] pb-8 px-4">
+              <div
+                className="relative w-full max-w-3xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal card: shadow + bg + content — invisible until image settles */}
+                <motion.div
+                  className={`w-full rounded-2xl shadow-2xl bg-[var(--background)]${image ? ' pt-[75%]' : ''}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: imageSettled ? 1 : 0, transition: { duration: 0.3 } }}
+                  exit={{ opacity: 0, transition: { duration: 0.15 } }}
+                >
+                  {children}
+                </motion.div>
+
+                {/* Image: absolutely positioned on top, outside the modal card's opacity */}
+                {image && (
+                  <div className="absolute inset-x-0 top-0 pointer-events-none">
+                    {image}
+                  </div>
+                )}
+
+                {/* Actions: over the image */}
+                {actions && (
+                  <div className="absolute top-3 right-3 z-20 flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-xl px-2.5 py-2 text-white">
+                    {actions}
+                  </div>
+                )}
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
